@@ -2,12 +2,12 @@ import { Request, Response } from 'express';
 import { Thought } from '../models/Thought';
 import { User } from '../models/User';
 
-export const getThoughts = async (req: Request, res: Response) => {
+export const getThoughts = async (_req: Request, res: Response) => {
   try {
     const thoughts = await Thought.find();
-    res.status(200).json(thoughts);
+    return res.status(200).json(thoughts);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };
 
@@ -17,22 +17,21 @@ export const getSingleThought = async (req: Request, res: Response) => {
     if (!thought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
-    res.status(200).json(thought);
+    return res.status(200).json(thought);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };
 
 export const createThought = async (req: Request, res: Response) => {
   try {
     const newThought = await Thought.create(req.body);
-    // Add thought to user's thought list
     await User.findByIdAndUpdate(req.body.userId, {
       $push: { thoughts: newThought._id },
     });
-    res.status(201).json(newThought);
+    return res.status(201).json(newThought);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };
 
@@ -46,9 +45,9 @@ export const updateThought = async (req: Request, res: Response) => {
     if (!updatedThought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
-    res.status(200).json(updatedThought);
+    return res.status(200).json(updatedThought);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };
 
@@ -58,14 +57,13 @@ export const deleteThought = async (req: Request, res: Response) => {
     if (!thought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
-    // Remove thought from user's thought list
     await User.findOneAndUpdate(
       { thoughts: req.params.thoughtId },
       { $pull: { thoughts: req.params.thoughtId } }
     );
-    res.status(200).json({ message: 'Thought deleted' });
+    return res.status(200).json({ message: 'Thought deleted' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };
 
@@ -79,9 +77,9 @@ export const addReaction = async (req: Request, res: Response) => {
     if (!thought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
-    res.status(200).json(thought);
+    return res.status(200).json(thought);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };
 
@@ -95,8 +93,8 @@ export const removeReaction = async (req: Request, res: Response) => {
     if (!thought) {
       return res.status(404).json({ message: 'Thought not found' });
     }
-    res.status(200).json(thought);
+    return res.status(200).json(thought);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 };

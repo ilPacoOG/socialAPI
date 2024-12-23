@@ -1,5 +1,5 @@
 import { Schema, Types } from 'mongoose';
-import { formatDate } from '../utils/formatDate';
+import { formatDate } from '../utils/formDate';
 
 export interface IReaction {
   reactionId: Types.ObjectId;
@@ -23,11 +23,15 @@ const reactionSchema = new Schema<IReaction>(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: formatDate,
     },
   },
   {
-    toJSON: { getters: true },
+    toJSON: {
+      transform: (_, ret) => {
+        ret.createdAt = formatDate(ret.createdAt); // Apply formatting here
+        return ret;
+      },
+    },
     id: false,
   }
 );
