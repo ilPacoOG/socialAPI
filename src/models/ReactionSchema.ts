@@ -1,5 +1,5 @@
 import { Schema, Types } from 'mongoose';
-import { formatDate } from '../utils/formDate';
+import { formatDate } from '../utils/formDate.js'; 
 
 export interface IReaction {
   reactionId: Types.ObjectId;
