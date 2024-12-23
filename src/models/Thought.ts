@@ -1,6 +1,6 @@
-import { Schema, model, Types, Document } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 import reactionSchema, { IReaction } from './ReactionSchema';
-import { formatDate } from '../utils/formatDate';
+import { formatDate } from '../utils/formDate'; // Corrected file path
 
 export interface IThought extends Document {
   thoughtText: string;
@@ -21,19 +21,25 @@ const thoughtSchema = new Schema<IThought>(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: formatDate,
     },
     username: { type: String, required: true },
     reactions: [reactionSchema],
   },
   {
-    toJSON: { virtuals: true, getters: true },
+    toJSON: {
+      virtuals: true,
+      transform: (_, ret) => {
+        ret.createdAt = formatDate(ret.createdAt); // Apply formatting in the transform function
+        return ret;
+      },
+    },
     id: false,
   }
 );
 
-thoughtSchema.virtual('reactionCount').get(function () {
-  return this.reactions.length;
+// Virtual to calculate reaction count
+thoughtSchema.virtual('reactionCount').get(function (this: IThought) {
+  return this.reactions ? this.reactions.length : 0; // Avoid accessing undefined
 });
 
 export const Thought = model<IThought>('Thought', thoughtSchema);
